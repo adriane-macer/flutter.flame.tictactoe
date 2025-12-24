@@ -55,10 +55,14 @@ class TicTacToeCubit extends Cubit<GameState> {
   }
 
   void resetGame() {
+    if(state.winner == null){
+      return;
+    }
     emit(GameState(
       board: List.filled(9, Player.none),
       currentPlayer: Player.X,
       winner: null,
+      winningLine: null
     ));
   }
 }

@@ -33,6 +33,7 @@ class CellComponent extends RectangleComponent with TapCallbacks {
       return;
     }
 
+
     // Add Symbol with Animation
     final symbol = newPlayer == Player.X ? 'X' : 'O';
     label = TextComponent(
@@ -55,17 +56,5 @@ class CellComponent extends RectangleComponent with TapCallbacks {
           label!.add(ScaleEffect.to(Vector2.all(1.0), EffectController(duration: 0.1)));
         }
     );
-    label = TextComponent(
-      text: symbol,
-      anchor: Anchor.center,
-      position: size / 2,
-      textRenderer: TextPaint(
-        style: TextStyle(
-          fontSize: size.x * 0.6, // Font is 60% of cell width
-          color: Colors.blue,
-        ),
-      ),
-    );
-    add(label!);
   }
 }

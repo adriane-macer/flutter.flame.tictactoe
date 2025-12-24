@@ -7,7 +7,6 @@ import 'package:flame_engine_tictactoe/features/flame/components/victory_display
 import 'package:flame_engine_tictactoe/features/flame/components/winning_line_component.dart';
 import 'package:flame_engine_tictactoe/features/flame/constants/player.dart';
 import 'package:flame_engine_tictactoe/features/flame/logic/tic_tac_toe_cubit.dart';
-import 'package:flutter/material.dart';
 
 class TicTacToeGame extends FlameGame {
   final TicTacToeCubit cubit;
@@ -22,11 +21,34 @@ class TicTacToeGame extends FlameGame {
   @override
   Future<void> onLoad() async {
     _setupLayout();
-
+    WinningLineComponent? winLine;
     // Re-sync with Cubit
     cubit.stream.listen((state) {
       for (int i = 0; i < 9; i++) {
         cells[i].updateSymbol(state.board[i]);
+      }
+
+      // Handle Victory Overlay
+      if (state.winner != null) {
+        String msg = state.winner == Player.none
+            ? "IT'S A DRAW!"
+            : "${state.winner!.name} WINS!";
+        _victoryOverlay = VictoryDisplayComponent(msg, size: size);
+        add(_victoryOverlay!);
+
+        if (state.winningLine != null && winLine == null) {
+          winLine = WinningLineComponent(
+            indices: state.winningLine!,
+            cellSize: boardSize / 3,
+          );
+          boardContainer.add(winLine!);
+        }
+      } else {
+        // Remove overlay on reset
+        winLine?.removeFromParent();
+        winLine = null;
+        _victoryOverlay?.removeFromParent();
+        _victoryOverlay = null;
       }
     });
   }
@@ -57,15 +79,18 @@ class TicTacToeGame extends FlameGame {
     add(boardContainer);
 
     // Add the Grid
-    boardContainer.add(BoardGridComponent(
-      position: Vector2.zero(),
-      size: Vector2.all(boardSize),
-    ));
+    boardContainer.add(
+      BoardGridComponent(
+        position: Vector2.zero(),
+        size: Vector2.all(boardSize),
+      ),
+    );
 
     // Add Cells with dynamic size
     cells = List.generate(9, (i) {
       final cell = CellComponent(
-        i, cubit,
+        i,
+        cubit,
         position: Vector2((i % 3) * cellSize, (i ~/ 3) * cellSize),
         size: Vector2.all(cellSize),
       );
@@ -74,39 +99,14 @@ class TicTacToeGame extends FlameGame {
     });
 
     // Responsive Reset Button
-    add(ResetButton(
-      position: Vector2(center.x - 60, boardContainer.position.y + boardSize + 40),
-      onTap: () => cubit.resetGame(),
-    ));
-
-    WinningLineComponent? winLine;
-    // Sync State
-    cubit.stream.listen((state) {
-      for (int i = 0; i < 9; i++) {
-        cells[i].updateSymbol(state.board[i]);
-      }
-
-      // Handle Victory Overlay
-      if (state.winner != null) {
-        String msg = state.winner == Player.none ? "IT'S A DRAW!" : "${state.winner!.name} WINS!";
-        _victoryOverlay = VictoryDisplayComponent(msg, size: size);
-        add(_victoryOverlay!);
-
-        if (state.winningLine != null && winLine == null) {
-          winLine = WinningLineComponent(
-            indices: state.winningLine!,
-            cellSize: boardSize / 3,
-          );
-          boardContainer.add(winLine!);
-        }
-
-      } else {
-        // Remove overlay on reset
-        winLine?.removeFromParent();
-        winLine = null;
-        _victoryOverlay?.removeFromParent();
-        _victoryOverlay = null;
-      }
-    });
+    add(
+      ResetButton(
+        position: Vector2(
+          center.x - 60,
+          boardContainer.position.y + boardSize + 40,
+        ),
+        onTap: () => cubit.resetGame(),
+      ),
+    );
   }
 }
