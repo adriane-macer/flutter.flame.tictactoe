@@ -19,12 +19,28 @@ class TicTacToeCubit extends Cubit<GameState> {
     final newBoard = List<Player>.from(state.board);
     newBoard[index] = state.currentPlayer;
 
-    final winner = _checkWinner(newBoard);
+    // Check winner and get the indices
+    List<int>? winningIndices;
+    const lines = [[0,1,2], [3,4,5], [6,7,8], [0,3,6], [1,4,7], [2,5,8], [0,4,8], [2,4,6]];
+
+    Player? winner;
+    for (var l in lines) {
+      if (newBoard[l[0]] != Player.none && newBoard[l[0]] == newBoard[l[1]] && newBoard[l[0]] == newBoard[l[2]]) {
+        winner = newBoard[l[0]];
+        winningIndices = l;
+        break;
+      }
+    }
+
+    if (winner == null && !newBoard.contains(Player.none)) {
+      winner = Player.none; // Draw
+    }
 
     emit(GameState(
       board: newBoard,
       currentPlayer: state.currentPlayer == Player.X ? Player.O : Player.X,
       winner: winner,
+      winningLine: winningIndices,
     ));
   }
 

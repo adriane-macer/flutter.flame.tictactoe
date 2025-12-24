@@ -4,6 +4,7 @@ import 'package:flame_engine_tictactoe/features/flame/components/board_grid_comp
 import 'package:flame_engine_tictactoe/features/flame/components/cell_component.dart';
 import 'package:flame_engine_tictactoe/features/flame/components/reset_buttons.dart';
 import 'package:flame_engine_tictactoe/features/flame/components/victory_display_component.dart';
+import 'package:flame_engine_tictactoe/features/flame/components/winning_line_component.dart';
 import 'package:flame_engine_tictactoe/features/flame/constants/player.dart';
 import 'package:flame_engine_tictactoe/features/flame/logic/tic_tac_toe_cubit.dart';
 import 'package:flutter/material.dart';
@@ -27,15 +28,14 @@ class TicTacToeGame extends FlameGame {
       for (int i = 0; i < 9; i++) {
         cells[i].updateSymbol(state.board[i]);
       }
-      // ... handle victory overlay logic here
     });
   }
 
   // Handle screen rotations or window resizing
   @override
-  void onGameResize(Vector2 size) {
-    super.onGameResize(size);
-    // You could call _setupLayout() here to re-calculate positions on the fly
+  void onParentResize(Vector2 maxSize) {
+    super.onGameResize(maxSize);
+    _setupLayout();
   }
 
   void _setupLayout() {
@@ -79,7 +79,7 @@ class TicTacToeGame extends FlameGame {
       onTap: () => cubit.resetGame(),
     ));
 
-
+    WinningLineComponent? winLine;
     // Sync State
     cubit.stream.listen((state) {
       for (int i = 0; i < 9; i++) {
@@ -91,8 +91,19 @@ class TicTacToeGame extends FlameGame {
         String msg = state.winner == Player.none ? "IT'S A DRAW!" : "${state.winner!.name} WINS!";
         _victoryOverlay = VictoryDisplayComponent(msg, size: size);
         add(_victoryOverlay!);
+
+        if (state.winningLine != null && winLine == null) {
+          winLine = WinningLineComponent(
+            indices: state.winningLine!,
+            cellSize: boardSize / 3,
+          );
+          boardContainer.add(winLine!);
+        }
+
       } else {
         // Remove overlay on reset
+        winLine?.removeFromParent();
+        winLine = null;
         _victoryOverlay?.removeFromParent();
         _victoryOverlay = null;
       }
