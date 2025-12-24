@@ -2,15 +2,8 @@
 
 Tic tac toe game using flutter and flame engine.
 
-## Getting Started
+<img width="320" height="718" alt="Image" src="https://github.com/user-attachments/assets/77ffb6f6-f88f-45c8-ae65-74648534bab9" />
 
-This project is a starting point for a Flutter application.
+<img width="320" height="718" alt="Image" src="https://github.com/user-attachments/assets/464b227c-d698-4270-a082-890bd14c184f" />
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+<img width="320" height="718" alt="Image" src="https://github.com/user-attachments/assets/2b726f6d-7ab7-4ea8-85ae-b6f6ef670ae4" />
